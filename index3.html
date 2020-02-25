@@ -1,0 +1,37 @@
+<!Doctype html>
+<html>
+    <head>
+        <title class = "searchvids">Search Vids</title>
+        <link rel = "stylesheet" type = "text/css" href = "style3.css">
+            
+        <!--jquery cdn-->
+        <script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+
+    </head>
+    <body>
+        <div id = "container">
+            <header>
+                <h1>Search<span>Vids</span></h1>
+                <p>Search for Content.</p>
+            </header>
+                <section>
+                    <form id ="search-form" name = "search-form" onsubmit = "return search()">
+                        <div class = "fieldcontainer">
+                            <input type = "search" id = "query" class ="search-field" placeholder = "Search Youtube...">
+                            <input type = "submit" name = "search-btn" id = "search-btn" value = "">
+                        </div>
+                    </form>
+
+                    <ul id = "results"></ul>
+                    <div id = "buttons"></div>
+                </section>
+                <footer>
+                    <p>Copyright &copy; All Rights Reserved 2020.</p>
+                </footer>
+        </div>
+        <script src = "script3.js"></script>
+    </body>
+</html>
