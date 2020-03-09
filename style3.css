@@ -93,7 +93,7 @@ footer{
 
 #search-btn{
     position: absolute;
-    right: 360px;
+    right: 390px;
     top:5px;
     height:32px;
     width:32px;
@@ -116,6 +116,9 @@ footer{
     opacity: 0.9;
 }
 
+
+/*Results from Api request*/
+
 #results li{
     padding: 10px 0;
     border-bottom: 1px #ccc dotted;
@@ -123,9 +126,11 @@ footer{
     overflow: auto;
 }
 
-.list-left{
-    float:left;
-    width:20%;
+/* list left width was 20%, and list-right was 78%*/
+
+div.list-left{
+    float: left;
+    width: 20%;
 }
 .list-left img{
     width: 100%;
@@ -133,11 +138,25 @@ footer{
     border: solid #ccc 1px;
 }
 
-.list-right{
+div.list-right{
     float: right;
     width: 78%;
 }
 
 .cTitle{
     color:#dd2826;
+}
+
+.button-container {
+    margin-top: 25px;
+}
+
+.paging-button{
+    background: #f4f4f4;
+    padding: 8px 13px;
+    border: #ccc 1px solid;
+    border-radius: 5px;
+    color: #333;
+    margin: 10px;
+    cursor: pointer;
 }

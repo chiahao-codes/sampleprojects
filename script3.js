@@ -15,7 +15,7 @@ $(function(){
            }, 400, function(){});
 
            $(icon).animate({
-                right:"50px"
+                right:"10px"
            }, 400);
 
            $(this).css({"backgroundColor":"black", "color": "white"});
@@ -32,7 +32,7 @@ $(function(){
 
 
             $(icon).animate({
-                right:'460px'
+                right:'390px'
             }, 400, function(){});
 
              $(this).css({"backgroundColor": "white", "color": "black"});
@@ -67,16 +67,20 @@ function search(){
     //Url, data in an object literal form...containing parameters with properties and values;
     //the properties define what we want back from the api request;
     //Resources are RETRIEVED in a JSON format.
-    //Resources have properties with values.
     //Properties define the resource.
+    //Note* Resources contain references to other resources. 
+
+    //api quota is expired. exceeded daily limit. will reset at midnight Pacific time.
+    //Update* api quota never reset. Needed to Create new project with Google Dev console, and create new Api Key;
+
+    // parts parameter specifies certain resource properties you want the api response to INCLUDE;
+    //fields parameter FILTERS the API response, saying you ONLY want these items;
     $.get("https://www.googleapis.com/youtube/v3/search", {
         part: "snippet, id",
-        q: "web design, web dev, web app, software engineering, building a website, web cms",
+        q: q,
         type: "video",
-        key: "AIzaSyBXbTBvYzL79lZmQgwcd-_C9hJB22Rhspc",
-        key: "AIzaSyAbovDJ9CGtkKuT7fSerJ8O20vnfPgt9-Y"},
-
-        
+        key: "AIzaSyBlZYGtJFZcSbk3NBYmVXBfc_bNxNR5rIw"
+    }, 
         
         //run a callback function using the data from the api get response;
             function(data){
@@ -89,11 +93,9 @@ function search(){
             //iterate through the items inside the returned API object;
             //$.each() is used to iterate through specific jquery arrays/objects/array-like obj;
             //$.each(jq array or object to be iterated, callback function)
-            //The callback function is passed the (index of the iteration round, value of the obj propery or array index)
+            //The callback function is passed the (index of the iteration round, value of the obj property or array index)
             // For objects: $.each(obj, function(key, value of key));
             // For arrays: $.each(array, function(index of iteration, value of each index inside array));
-
-           
             $.each(data.items, function(i, item){
                 //Get output;
                 var output = getOutput(item);
@@ -110,8 +112,106 @@ function search(){
             }
             
         
-        )
+        );
 }
+
+//Next Page function;
+function nextPage(){
+    //variables for next page token;
+    var token = $('#next-button').data('token');
+
+    //Redundancy? Api still works with just the q variable below.
+    var q = $('#next-button').data('query');
+
+//Clear Results;
+    $('#results').html('');
+    $('#buttons').html('');
+
+ //Get Form Input
+ q = $('#query').val();
+
+//put the query field value inside the api request
+    $.get("https://www.googleapis.com/youtube/v3/search", {
+        part: "snippet, id",
+        q: q,
+        pageToken: token,
+        type: "video",
+        key: "AIzaSyBlZYGtJFZcSbk3NBYmVXBfc_bNxNR5rIw"
+    },
+        
+        //run a callback function using the data from the api get response;
+            function(data){
+                var nextPageToken = data.nextPageToken;
+                var prevPageToken = data.prevPageToken;
+
+                console.log(data);
+
+                $.each(data.items, function(i, item){
+                    //Get output;
+                    var output = getOutput(item);
+    
+                    //display results;
+                    $('#results').append(output); 
+                });
+    
+                    var buttons = getButtons(prevPageToken, nextPageToken);
+                
+                    //Display buttons;
+                    $('#buttons').append(buttons);    
+            
+}
+    );
+
+}
+
+
+
+//Prev Page function;
+function prevPage(){
+    //variables for next page token;
+    var token = $('#prev-button').data('token');
+   var q = $('#prev-button').data('query');
+
+//Clear Results;
+    $('#results').html('');
+    $('#buttons').html('');
+
+ //Get Form Input
+ q = $('#query').val();
+
+    $.get("https://www.googleapis.com/youtube/v3/search", {
+        part: "snippet, id",
+        q: q,
+        pageToken: token,
+        type: "video",
+        key: "AIzaSyBlZYGtJFZcSbk3NBYmVXBfc_bNxNR5rIw"
+    },
+
+        //run a callback function using the data from the api get response;
+            function(data){
+                var nextPageToken = data.nextPageToken;
+                var prevPageToken = data.prevPageToken;
+
+                console.log(data);
+
+                $.each(data.items, function(i, item){
+                    //Get output;
+                    var output = getOutput(item);
+    
+                    //display results;
+                    $('#results').append(output); 
+                });
+    
+                    var buttons = getButtons(prevPageToken, nextPageToken);
+                
+                    //Display buttons;
+                    $('#buttons').append(buttons);    
+            
+}
+    );
+}
+
+
 
 //Build Output;
 
@@ -124,8 +224,8 @@ function getOutput(item){
     var videoDate = item.snippet.publishedAt;
 
     //Build Output String;
-    var output = '<li>' + '<div class = "list=left">' + '<img src = "' + thumb + '">'
-    + '</div>' + '<div class = " list-right">' + '<h3>' + title + '</h3>' +
+    var output = '<li>' + '<div class = "list-left">' + '<img src = "' + thumb + '">'
+    + '</div>' + '<div class = " list-right">' + '<h3><a data-fancybox class = "fancybox fancybox.iframe" href = "http://www.youtube.com/embed/' + videoId +'">' + title + '</a></h3>' +
     '<small>By <span class = "cTitle">' + channelTitle + ' </span> on ' +videoDate + '</small>' +
     '<p>' + description + '</p>' + 
     '</div>' +
@@ -142,16 +242,19 @@ function getButtons(prevPageToken, nextPageToken){
     if(!prevPageToken){
         var btnoutput = '<div class = "button-container">' + 
         '<button id = "next-button" class = "paging-button" data-token = "' + nextPageToken + '" data-query = "' + q +'"'
-        + 'onclick = "nextPage();">Next Page</button></div>';
+        + 'onclick = "nextPage()">Next Page</button></div>';
     } else {
         var btnoutput = '<div class = "button-container">' + 
+
         //Previous button created;
-        '<button id = "prev-button" class = "paging-button" data-token = "' + prevPageToken + '" data-query = "' + q +'"'
-        + 'onclick = "prevPage();">Prev Page</button>' +
+        ' <button id = "prev-button" class = "paging-button" data-token = "' + prevPageToken + '" data-query = "' + q +'" '
+        +
+        
+        'onclick = "prevPage()">Prev Page</button>' +
 
        //Next button created;
         '<button id = "next-button" class = "paging-button" data-token = "' + nextPageToken + '" data-query = "' + q +'"'
-        + 'onclick = "nextPage();">Next Page</button></div>';
+        + 'onclick = "nextPage()">Next Page</button></div>';
 
     }
 
